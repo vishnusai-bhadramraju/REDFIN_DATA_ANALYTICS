@@ -40,7 +40,7 @@ This project involves creating an ETL pipeline for extracting data from the REDF
 ### Steps
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/redfin-etl-pipeline.git
+   gh repo clone vishnusai-bhadramraju/REDFIN_DATA_ANALYTICS
    cd redfin-etl-pipeline
    ```
 
