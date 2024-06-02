@@ -1,0 +1,70 @@
+Create or replace database redfin_database;
+create or replace schema redfin_database.redfin_schema
+
+CREATE OR REPLACE TABLE redfin_database.redfin_schema.redfin_table (
+period_begin DATE,
+period_end DATE,
+period_duration INT,
+region_type STRING,
+region_type_id INT,
+table_id INT,
+is_seasonally_adjusted STRING,
+city STRING,
+state STRING,
+state_code STRING,
+property_type STRING,
+property_type_id INT,
+median_sale_price FLOAT,
+median_list_price FLOAT,
+median_ppsf FLOAT,
+median_list_ppsf FLOAT,
+homes_sold FLOAT,
+inventory FLOAT,
+months_of_supply FLOAT,
+median_dom FLOAT,
+avg_sale_to_list FLOAT,
+sold_above_list FLOAT,
+parent_metro_region_metro_code STRING,
+last_updated DATETIME,
+period_begin_in_years STRING,
+period_end_in_years STRING,
+period_begin_in_months STRING,
+period_end_in_months STRING
+);
+
+select * from redfin_table;
+
+create schema file_format_schema
+
+create or replace file format redfin_database.file_format_schema.file_csv
+    type = 'CSV'
+    field_delimiter = ','
+    RECORD_DELIMITER = '\n'
+    skip_header = 1
+    -- error_on_column_count_mismatch = FALSE;
+
+create schema extrenal_stage_schema
+
+create or replace stage redfin_database.extrenal_stage_schema.external_stage
+    url="s3://redfintransform/"
+    credentials=(aws_key_id='xxxxx'
+    aws_secret_key='xxxxxxx')
+    FILE_FORMAT = redfin_database.file_format_schema.file_csv;
+
+list @redfin_database.extrenal_stage_schema.external_stage
+CREATE OR REPLACE SCHEMA redfin_database.snowpipe_schema;
+
+create or replace pipe redfin_database.snowpipe_schema.snow_pipe
+auto_ingest = TRUE
+AS 
+COPY INTO redfin_database.redfin_schema.redfin_table
+FROM @redfin_database.extrenal_stage_schema.external_stage;
+
+
+DESC PIPE redfin_database.snowpipe_schema.snow_pipe;
+
+
+select * from redfin_database.redfin_schema.redfin_table limit 10
+
+
+select * from redfin_database.redfin_schema.redfin_table
